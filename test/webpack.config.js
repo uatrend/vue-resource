@@ -1,3 +1,5 @@
+const Webpack = require('webpack');
+
 module.exports = {
 
     mode: 'development',
@@ -17,6 +19,13 @@ module.exports = {
                 use: 'babel-loader'
             }
         ]
-    }
+    },
+
+    plugins: [
+        new Webpack.DefinePlugin({
+            __VUE_OPTIONS_API__: true,
+            __VUE_PROD_DEVTOOLS__: true
+        })
+    ]
 
 };

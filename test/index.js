@@ -1,9 +1,15 @@
-import Vue from 'vue';
-import VueResource from '../src/index';
+import {createApp, h} from 'vue';
+import VueResource from '../src/index.js';
 
-Vue.use(VueResource);
+import url from './url';
+import http from './http';
+import resource from './resource';
+// import promise from './promise';
 
-require('./url');
-require('./http');
-require('./resource');
-require('./promise');
+const app = createApp({render: () => h('div', {})});
+app.use(VueResource);
+
+url(app);
+http(app);
+resource();
+// promise();

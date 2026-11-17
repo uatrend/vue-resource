@@ -1,33 +1,35 @@
-import Vue from 'vue';
+export default (app) => {
 
-describe('Vue.url', function () {
+    describe('app.url', function () {
 
-    it('data{/id}', function () {
+        it('data{/id}', function () {
 
-        expect(Vue.url('data{/id}')).toBe('data');
-        expect(Vue.url('data{/id}', {id: 1})).toBe('data/1');
+            expect(app.url('data{/id}')).toBe('data');
+            expect(app.url('data{/id}', {id: 1})).toBe('data/1');
+
+        });
+
+        it('data{/array}', function () {
+
+            expect(app.url('data{?array}')).toBe('data');
+            expect(app.url('data{?array}', {array: [1, 2, 3]})).toBe('data?array=1,2,3');
+
+        });
+
+        it('{+path}data', function () {
+
+            expect(app.url('{+path}data')).toBe('data');
+            expect(app.url('{+path}data', {path: 'path1/path2/'})).toBe('path1/path2/data');
+
+        });
+
+        it('{+base}data', function () {
+
+            app.url.options.params.base = 'base/path/';
+            expect(app.url('{+base}data')).toBe('base/path/data');
+
+        });
 
     });
 
-    it('data{/array}', function () {
-
-        expect(Vue.url('data{?array}')).toBe('data');
-        expect(Vue.url('data{?array}', {array: [1,2,3]})).toBe('data?array=1,2,3');
-
-    });
-
-    it('{+path}data', function () {
-
-        expect(Vue.url('{+path}data')).toBe('data');
-        expect(Vue.url('{+path}data', {path: 'path1/path2/'})).toBe('path1/path2/data');
-
-    });
-
-    it('{+base}data', function () {
-
-        Vue.url.options.params.base = 'base/path/';
-        expect(Vue.url('{+base}data')).toBe('base/path/data');
-
-    });
-
-});
+};

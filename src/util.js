@@ -2,15 +2,16 @@
  * Utility functions.
  */
 
-import Promise from './promise';
+import {nextTick as $nextTick} from 'vue';
 
 var {hasOwnProperty} = {}, {slice} = [], debug = false, ntick;
 
 export const inBrowser = typeof window !== 'undefined';
 
-export default function ({config, nextTick}) {
-    ntick = nextTick;
-    debug = config.debug || !config.silent;
+export default function (app) {
+    const { config, nextTick, version } = app;
+    ntick = nextTick || $nextTick;
+    debug = config ? ((version && version.split('.')[0]) < 3 ? (config.devtools || !config.silent) : config.performance) : debug;
 }
 
 export function warn(msg) {

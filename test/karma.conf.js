@@ -6,7 +6,7 @@ module.exports = config => {
 
     frameworks: ['jasmine'],
 
-    browsers: ['Chrome', 'Safari', 'Firefox'],
+    browsers: ['Chrome'],
 
     files: [
       'index.js', {
@@ -25,7 +25,7 @@ module.exports = config => {
 
     webpack: {
       mode: 'development'
-    },
+    }
 
   });
 

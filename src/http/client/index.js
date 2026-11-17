@@ -2,7 +2,7 @@
  * Base client.
  */
 
-import Promise from '../../promise';
+// import Promise from '../../promise';
 import xhrClient from './xhr';
 import nodeClient from './node';
 import {warn, when, isObject, isFunction, inBrowser} from '../../util';

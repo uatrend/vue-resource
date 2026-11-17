@@ -1,51 +1,52 @@
-import Vue from 'vue';
+import {createTestApp} from "./util";
 
-describe('this.$resource', function () {
+export default () => {
 
-    it('get({file: "valid.json"})', (done) => {
+    describe('this.$resource', function () {
 
-        var vm = new Vue({
+        it('get({file: "valid.json"})', (done) => {
 
-            created() {
+            var vm = createTestApp({
 
-                var resource = this.$resource('data{/file}');
+                created() {
+                    var resource = this.$resource('data{/file}');
 
-                resource.get({file: 'valid.json'}).then((res) => {
+                    resource.get({file: 'valid.json'}).then((res) => {
 
-                    expect(res.ok).toBe(true);
-                    expect(res.status).toBe(200);
-                    expect(res.data.foo).toBe('bar');
+                        expect(res.ok).toBe(true);
+                        expect(res.status).toBe(200);
+                        expect(res.data.foo).toBe('bar');
 
-                    done();
-                });
+                        done();
+                    });
 
-            }
+                }
+
+            });
+
+        });
+
+        it('save({file: "valid.json"}, {foo: "bar"})', (done) => {
+
+            var vm = createTestApp({
+
+                created() {
+                    var resource = this.$resource('data{/file}');
+
+                    resource.save({file: 'valid.json'}, {foo: 'bar'}).then((res) => {
+
+                        expect(res.ok).toBe(true);
+                        expect(res.status).toBe(200);
+                        expect(res.data.foo).toBe('bar');
+
+                        done();
+                    });
+
+                }
+
+            });
 
         });
 
     });
-
-    it('save({file: "valid.json"}, {foo: "bar"})', (done) => {
-
-        var vm = new Vue({
-
-            created() {
-
-                var resource = this.$resource('data{/file}');
-
-                resource.save({file: 'valid.json'}, {foo: 'bar'}).then((res) => {
-
-                    expect(res.ok).toBe(true);
-                    expect(res.status).toBe(200);
-                    expect(res.data.foo).toBe('bar');
-
-                    done();
-                });
-
-            }
-
-        });
-
-    });
-
-});
+};

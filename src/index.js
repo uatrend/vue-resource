@@ -2,56 +2,91 @@
  * Install plugin.
  */
 
+import {getCurrentInstance} from 'vue';
+
 import Url from './url/index';
 import Http from './http/index';
-import Promise from './promise';
 import Resource from './resource';
-import Util, {options} from './util';
+import Util, {options, warn} from './util';
 
-function plugin(Vue) {
+function plugin(app) {
+    const {globalInstance} = app.config;
 
-    if (plugin.installed) {
+    if (app.vueResourceInstalled) {
         return;
     }
 
-    Util(Vue);
+    const vueVersion = getVueVersion(app);
 
-    Vue.url = Url;
-    Vue.http = Http;
-    Vue.resource = Resource;
-    Vue.Promise = Promise;
+    Util(app);
 
-    Object.defineProperties(Vue.prototype, {
+    app.url = Url;
+    app.http = Http;
+    app.resource = Resource;
 
-        $url: {
-            get() {
-                return options(Vue.url, this, this.$options.url);
-            }
-        },
+    if (vueVersion < 3) {
+        defineProperties.call(null, app.prototype, app);
+    } else {
+        defineProperties.call(app, app.config.globalProperties, globalInstance || app, true);
+    }
 
-        $http: {
-            get() {
-                return options(Vue.http, this, this.$options.http);
-            }
-        },
-
-        $resource: {
-            get() {
-                return Vue.resource.bind(this);
-            }
-        },
-
-        $promise: {
-            get() {
-                return (executor) => new Vue.Promise(executor, this);
-            }
-        }
-
-    });
+    app.vueResourceInstalled = true;
 }
 
-if (typeof window !== 'undefined' && window.Vue && !window.Vue.resource) {
-    window.Vue.use(plugin);
+function defineProperties(obj, app, enumerable = false) {
+    const _vue = this;
+    const definedProps = {
+        $url: {
+            get() {
+                const [$this, $options] = getInstanceProps.call(this, _vue);
+                return options(app.url, $this, $options.url);
+            }
+        },
+        $http: {
+            get() {
+                const [$this, $options] = getInstanceProps.call(this, _vue);
+                return options(app.http, $this, $options.http);
+            }
+        },
+        $resource: {
+            get() {
+                const [$this] = getInstanceProps.call(this, _vue);
+                return app.resource.bind($this);
+            }
+        }
+    };
+
+    Object.defineProperties(obj, enumerate(definedProps, enumerable));
+}
+
+function getInstanceProps(_vue) {
+    if (_vue) {
+        const {proxy} = getCurrentInstance() || {}
+
+        return [proxy || {}, proxy?.$options || {}];
+    } else {
+        return [this, this.$options];
+    }
+}
+
+function enumerate(obj, enumerable) {
+    return enumerable ? Object.entries(obj).reduce((props, [key, prop]) => {
+        props[key] = Object.assign(prop, {enumerable});
+
+        return props;
+    }, {}) : obj;
+}
+
+function getVueVersion (app) {
+    return app && app.version && Number(app.version.split('.')[0])
+}
+
+if (typeof exports === 'object') {
+    module.exports = plugin;
+} else if (typeof define === 'function' && define.amd) {
+    define([], function () { return plugin; });
+} else if (typeof window !== 'undefined' && window.Vue && window.Vue.use) {
+    Vue.use(plugin);
 }
 
 export default plugin;

@@ -2,7 +2,7 @@
  * Http client (Node).
  */
 
-import Promise from '../../promise';
+// import Promise from '../../promise';
 import {each, trim} from '../../util';
 
 export default function (request) {
